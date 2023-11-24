@@ -4,57 +4,32 @@
 #include "utils.h"
 #include "sdlFunctions.h"
 #include "objLoader.h"
-#include "glm/gtc/matrix_transform.hpp"
-
-
-std::vector<glm::vec3> setupVertexArray(const std::vector<glm::vec3>& vertices, const std::vector<Face>& faces) {
-    std::vector<glm::vec3> vertexArray;
-
-    // For each face
-    for (const auto& face : faces) {
-        for (const auto& vertexIndices : face.vertexIndices) {
-            glm::vec3 vertexPosition = vertices[vertexIndices[0]];
-            vertexArray.push_back(vertexPosition);
-        }
-    }
-
-    return vertexArray;
-}
-glm::vec3 rotateVertex(const glm::vec3& vertex, const glm::vec3& rotation) {
-    glm::mat4 rotX = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1, 0, 0));
-    glm::mat4 rotY = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0, 1, 0));
-    glm::mat4 rotZ = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0, 0, 1));
-
-    glm::mat4 rotationMatrix = rotX * rotY * rotZ;
-    glm::vec4 rotatedVertex = rotationMatrix * glm::vec4(vertex, 1.0f);
-
-    return {rotatedVertex.x, rotatedVertex.y, rotatedVertex.z};
-}
-
-
-
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
-    init();
+    init(); // Inicializa SDL y crea la ventana
     bool running = true;
 
     std::vector<Face> faces;
     std::vector<glm::vec3> vertices;
-    std::string fileName = "spaceship.obj";
-    std::string currentPath = getCurrentPath();
-    std::string filePath = getParentDirectory(currentPath) + "\\" + fileName;
+    std::string fileName = "spaceship.obj"; // Nombre del archivo OBJ a cargar
+    std::string currentPath = getCurrentPath(); // Obtiene el directorio actual
+    std::string filePath = getParentDirectory(currentPath) + "\\" + fileName; // Ruta completa del archivo OBJ
 
-    bool success = loadOBJ(filePath, vertices, faces);
+    bool success = loadOBJ(filePath, vertices, faces); // Carga el archivo OBJ y obtiene vértices y caras
 
     if (!success) {
-        std::cout << "El archivo OBJ fallo al cargarse." << std::endl;
+        std::cout << "El archivo OBJ falló al cargarse." << std::endl;
         return 1;
     }
-    glm::vec3 rotationAngles = glm::vec3(125, 120, 50); // Ajusta estos ángulos para la orientación deseada
+
+    glm::vec3 rotationAngles = glm::vec3(120, 120, 60); // Ajusta estos ángulos para la orientación deseada
+
+    // Aplica la rotación a los vértices cargados
     for (auto& vertex : vertices) {
         vertex = rotateVertex(vertex, rotationAngles);
     }
 
+    // Escala y traslada los vértices para ajustar la posición y escala deseada
     for (auto& vertex : vertices) {
         vertex.x *= 80;
         vertex.y *= 80;
@@ -65,6 +40,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
         vertex.z += 300;
     }
 
+    // Crea un arreglo de vértices a partir de los vértices y caras cargados
     std::vector<glm::vec3> vertexArray = setupVertexArray(vertices, faces);
 
     while (running) {
@@ -75,14 +51,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
             }
         }
 
-        clear();
+        clear(); // Limpia la pantalla
 
-        setColor(); // Set color to white
+        // Dibuja los triángulos formados por el arreglo de vértices
         for (size_t i = 0; i < vertexArray.size(); i += 3) {
             triangle(vertexArray[i], vertexArray[i + 1], vertexArray[i + 2]);
         }
 
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(renderer); // Actualiza la ventana
     }
 
     SDL_DestroyRenderer(renderer);

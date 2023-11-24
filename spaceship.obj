@@ -1,6 +1,5 @@
 # Blender 3.6.1
 # www.blender.org
-mtllib lab3.mtl
 o Cube
 v 2.127397 0.343816 0.539398
 v -0.412589 1.059411 0.701648
