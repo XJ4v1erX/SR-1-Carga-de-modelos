@@ -12,12 +12,8 @@ std::vector<glm::vec3> setupVertexArray(const std::vector<glm::vec3>& vertices, 
 
     // For each face
     for (const auto& face : faces) {
-        // For each vertex in the face
         for (const auto& vertexIndices : face.vertexIndices) {
-            // Get the vertex position from the input array using the indices from the face
             glm::vec3 vertexPosition = vertices[vertexIndices[0]];
-
-            // Add the vertex position to the vertex array
             vertexArray.push_back(vertexPosition);
         }
     }
@@ -64,8 +60,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
         vertex.y *= 80;
         vertex.z *= 80;
 
-        vertex.x += 300;
-        vertex.y += 320;
+        vertex.x += 275;
+        vertex.y += 300;
         vertex.z += 300;
     }
 
